@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 
 const ListItem = ({ item }) => {
   const [overTitle, setOverTitle] = useState(null)
+  const doSomethingLater = () => {
+    setTimeout(() => setOverTitle(null), 6000)
+  }
   return (
     <div>
       {item.title && (
@@ -17,6 +20,7 @@ const ListItem = ({ item }) => {
         data-testid={'clickBtn'}
         onClick={() => {
           setOverTitle('Over title')
+          doSomethingLater()
         }}
       >
         Click me
