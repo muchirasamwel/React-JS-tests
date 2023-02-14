@@ -1,9 +1,13 @@
 import React from 'react'
 import { render, unmountComponentAtNode } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { act } from 'react-dom/test-utils'
 import User from './user'
+import { waitFor } from '@testing-library/react'
+import axios from 'axios'
 
 let container = null
+
 beforeEach(() => {
   // setup a DOM element as a render target
   container = document.createElement('div')
@@ -20,23 +24,24 @@ afterEach(() => {
 it('renders user data', async () => {
   const fakeUser = {
     name: 'Joni Baez',
-    age: '32',
-    address: '123, Charming Avenue'
+    website: 'place.com',
+    email: 'Charming@place.com'
   }
   jest
-    .spyOn(global, 'fetch')
-    .mockImplementation(() =>
-      Promise.resolve({ json: () => Promise.resolve(fakeUser) })
-    )
+    .spyOn(axios, 'get')
+    .mockImplementation(url => Promise.resolve({ data: fakeUser }))
+
   // Use the asynchronous version of act to apply resolved promises
+
   await act(async () => {
-    render(<User id='123' />, container)
+    await createRoot(container).render(<User id='3' />)
+  })
+
+  await waitFor(() => {
+    expect(container.querySelector('summary')).toBeDefined()
   })
 
   expect(container.querySelector('summary').textContent).toBe(fakeUser.name)
-  expect(container.querySelector('strong').textContent).toBe(fakeUser.age)
-  expect(container.textContent).toContain(fakeUser.address)
-
-  // remove the mock to ensure tests are completely isolated
-  global.fetch.mockRestore()
+  expect(container.querySelector('strong').textContent).toBe(fakeUser.email)
+  expect(container.textContent).toContain(fakeUser.website)
 })
