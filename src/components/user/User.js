@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react'
-
+import axios from 'axios'
 export default function User (props) {
   const [user, setUser] = useState(null)
 
   async function fetchUserData (id) {
-    const response = await fetch('/' + id)
-    setUser(await response.json())
+    try {
+      const response = await axios.get(
+        'https://jsonplaceholder.typicode.com/users/' + id
+      )
+      console.log('data', response.data)
+      setUser(response.data)
+    } catch (err) {
+      console.log({ err })
+    }
   }
 
   useEffect(() => {
@@ -19,9 +26,9 @@ export default function User (props) {
   return (
     <details>
       <summary>{user.name}</summary>
-      <strong>{user.age}</strong> years old
+      <strong>{user.email}</strong> my email
       <br />
-      lives in {user.address}
+      Website {user.website}
     </details>
   )
 }
